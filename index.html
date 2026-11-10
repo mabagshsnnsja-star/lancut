@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#092b25">
+  <title>Giáng Sinh An Lành</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --pine: #0b342c;
+      --pine-light: #174b3a;
+      --cream: #fff3d4;
+      --gold: #f5ca72;
+      --muted: #bdc9bc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(ellipse at 50% 30%, #1c5140 0, transparent 48%),
+        radial-gradient(ellipse at 50% 100%, #153c32 0, #071c1a 72%);
+    }
+
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      opacity: .38;
+      background-image:
+        radial-gradient(2px 2px at 10% 18%, #fff 50%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 28% 72%, #fff 50%, transparent 55%),
+        radial-gradient(2px 2px at 75% 15%, #fff 50%, transparent 55%),
+        radial-gradient(1px 1px at 90% 62%, #fff 50%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 64% 84%, #fff 50%, transparent 55%);
+      background-size: 210px 180px, 260px 220px, 190px 230px, 240px 190px, 280px 240px;
+    }
+
+    #snow-canvas {
+      position: fixed;
+      z-index: 8;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    button, label { font: inherit; }
+    button { color: inherit; }
+
+    .page {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 24px 28px 22px;
+    }
+
+    header { text-align: center; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font: 700 .72rem/1.4 Arial, sans-serif;
+      letter-spacing: .27em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 0;
+      color: #fff2d2;
+      font-size: clamp(2.4rem, 6vw, 4.5rem);
+      font-weight: 400;
+      letter-spacing: .02em;
+      text-shadow: 0 3px 22px #f4c66b44;
+    }
+    .subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 1.03rem;
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      align-items: center;
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    .tree-stage {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      aspect-ratio: 1 / 1.06;
+      margin: auto;
+      isolation: isolate;
+      filter: drop-shadow(0 22px 24px #020e0c77);
+    }
+    .tree-art {
+      position: absolute;
+      inset: 2% 5% 0;
+      overflow: visible;
+      width: 90%;
+      height: 98%;
+    }
+    .star {
+      position: absolute;
+      z-index: 2;
+      top: 3%;
+      left: 50%;
+      color: #ffe49a;
+      font-size: clamp(2.5rem, 7vw, 4rem);
+      line-height: 1;
+      text-shadow: 0 0 22px #ffd767, 0 0 48px #ffc94a;
+      transform: translateX(-50%);
+      animation: glow 2.6s ease-in-out infinite alternate;
+    }
+    @keyframes glow { to { filter: brightness(1.3); text-shadow: 0 0 30px #ffe58a, 0 0 66px #ffcf52; } }
+
+    .garland {
+      position: absolute;
+      z-index: 1;
+      left: 50%;
+      width: 66%;
+      height: 19%;
+      border-bottom: 3px dotted #f8d780;
+      border-radius: 0 0 50% 50%;
+      opacity: .9;
+      transform: translateX(-50%) rotate(-7deg);
+      filter: drop-shadow(0 0 5px #f4c56a);
+      pointer-events: none;
+    }
+    .garland.one { top: 28%; }
+    .garland.two { top: 47%; width: 85%; }
+    .garland.three { top: 67%; width: 96%; }
+
+    .photo-slot {
+      position: absolute;
+      z-index: 3;
+      display: grid;
+      width: clamp(42px, 7vw, 58px);
+      aspect-ratio: 1 / .88;
+      padding: 7px;
+      place-items: center;
+      overflow: visible;
+      border: 2px solid #ffcf84;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #f2544b, #bd202d 65%, #751627);
+      box-shadow: inset -7px -8px 12px #280c1944, inset 5px 5px 10px #fff3c933, 0 6px 13px #020e0c99, 0 0 12px #f1ce7b44;
+      cursor: pointer;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .photo-slot::before {
+      position: absolute;
+      z-index: 4;
+      top: -17px;
+      left: 50%;
+      width: 44px;
+      height: 23px;
+      background:
+        radial-gradient(ellipse at 29% 56%, #ffe6aa 0 20%, #c88939 23% 29%, transparent 32%),
+        radial-gradient(ellipse at 71% 56%, #ffe6aa 0 20%, #c88939 23% 29%, transparent 32%),
+        radial-gradient(ellipse at 50% 62%, #fff0bd 0 13%, #bd772d 16% 23%, transparent 26%);
+      content: "";
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+    .gift-string {
+      position: absolute;
+      z-index: 0;
+      top: calc(var(--string-length) * -1);
+      left: 50%;
+      height: var(--string-length);
+      border-left: 1px solid #f6db91;
+      filter: drop-shadow(0 0 2px #f7d985);
+      pointer-events: none;
+      transform: translateX(-50%) rotate(var(--string-angle, 0deg));
+      transform-origin: bottom;
+    }
+    .photo-slot::after {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        linear-gradient(90deg, transparent 39%, #f8d47a 39% 47%, #fff0b4 47% 53%, #d89c42 53% 61%, transparent 61%),
+        linear-gradient(0deg, transparent 39%, #f8d47a 39% 47%, #fff0b4 47% 53%, #d89c42 53% 61%, transparent 61%);
+      content: "";
+      pointer-events: none;
+    }
+    .slot-2 {
+      background: linear-gradient(145deg, #f66a54, #cf2931 65%, #81202a);
+    }
+    .slot-3 {
+      background: linear-gradient(145deg, #ed493e, #ae192c 65%, #671324);
+    }
+    .slot-4 {
+      background: linear-gradient(145deg, #f55c49, #c52430 65%, #7a1725);
+    }
+    .slot-5 {
+      background: linear-gradient(145deg, #e94840, #b61e2b 65%, #6e1422);
+    }
+    .photo-slot:hover, .photo-slot.active {
+      z-index: 4;
+      box-shadow: 0 0 0 5px #f8da8144, 0 0 28px #ffe68b;
+      transform: scale(1.12);
+    }
+    .photo-slot img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      border: 1px solid #fff4d966;
+      border-radius: 3px;
+      object-fit: cover;
+    }
+    .photo-slot .placeholder {
+      display: none;
+    }
+    .photo-slot .slot-number {
+      display: none;
+    }
+    .slot-1 { top: 24%; left: 37%; }
+    .slot-2 { top: 40%; left: 20%; }
+    .slot-3 { top: 40%; right: 20%; }
+    .slot-4 { top: 58%; left: 30%; }
+    .slot-5 { top: 58%; right: 30%; }
+
+    .tree-caption {
+      display: none;
+    }
+
+    .panel {
+      display: flex;
+      width: min(100%, 555px);
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+    }
+    h2 { margin: 0 0 8px; font-size: 1.6rem; font-weight: 400; }
+    .upload-button, .camera-button, .close-button {
+      display: inline-flex;
+      min-height: 45px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 17px;
+      border: 1px solid #f5d58b;
+      border-radius: 999px;
+      color: #2b2618;
+      background: linear-gradient(135deg, #f9e4ac, #eac36c);
+      cursor: pointer;
+      font: 700 .85rem Arial, sans-serif;
+      transition: filter .2s, transform .2s;
+    }
+    .upload-button:hover, .camera-button:hover, .close-button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .upload-button.disabled { opacity: .5; pointer-events: none; }
+    #photo-picker { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
+    .camera-status {
+      display: none;
+      flex-basis: 100%;
+      margin: 0;
+      color: #cbd4c8;
+      font: .76rem/1.4 Arial, sans-serif;
+    }
+    .camera-status.error { display: block; color: #ffb6a9; }
+    .video-wrap {
+      position: fixed;
+      z-index: 9;
+      right: 18px;
+      bottom: 18px;
+      display: none;
+      width: min(180px, 32vw);
+      overflow: hidden;
+      border: 1px solid #ffffff24;
+      border-radius: 12px;
+      background: #061310;
+      box-shadow: 0 6px 24px #020e0c99;
+    }
+    .video-wrap.visible { display: block; }
+    .video-wrap video { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; transform: scaleX(-1); }
+    .finger-count {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 2px solid #ffe6a1;
+      border-radius: 50%;
+      color: #fff5cf;
+      background: #0a2b25dc;
+      font: 700 1.2rem Arial, sans-serif;
+    }
+    .camera-button.stop {
+      border-color: #c87c70;
+      color: #ffe6e0;
+      background: #6a2b2c;
+    }
+
+    .modal {
+      position: fixed;
+      z-index: 10;
+      inset: 0;
+      display: grid;
+      visibility: hidden;
+      padding: 24px;
+      place-items: center;
+      background: #03120feF;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, visibility .25s;
+    }
+    .modal.open { visibility: visible; opacity: 1; pointer-events: auto; }
+    .modal-content { max-width: min(82vw, 680px); text-align: center; transform: scale(.88); transition: transform .3s; }
+    .modal.open .modal-content { transform: scale(1); }
+    .modal img {
+      display: block;
+      max-width: min(78vw, 600px);
+      max-height: 68vh;
+      margin: 0 auto 18px;
+      border: 5px solid #f1d18a;
+      border-radius: 15px;
+      box-shadow: 0 0 55px #f0c96738;
+      object-fit: contain;
+    }
+    .modal-title { margin: 0 0 17px; color: var(--cream); font-size: 1.5rem; font-weight: 400; }
+    .close-button { min-height: 40px; }
+    .snow-line { margin: 19px 0 0; color: #f3d994; font-size: .9rem; text-align: center; }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 22px 18px 18px; }
+      main { grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+      .tree-stage { width: min(100%, 370px); }
+      .panel { width: min(100%, 520px); }
+      .subtitle { font-size: .92rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="snow-canvas" aria-hidden="true"></canvas>
+  <div class="page">
+    <header>
+      <h1>Chúc mừng Giáng Sinh</h1>
+    </header>
+    <main>
+      <section class="tree-stage" aria-label="Cây thông Giáng Sinh với năm vị trí ảnh">
+        <svg class="tree-art" viewBox="0 0 500 540" aria-hidden="true">
+          <defs>
+            <linearGradient id="branch" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="#317052"/>
+              <stop offset=".48" stop-color="#164b38"/>
+              <stop offset="1" stop-color="#0b3028"/>
+            </linearGradient>
+            <linearGradient id="trunk" x1="0" x2="1">
+              <stop stop-color="#805331"/>
+              <stop offset=".5" stop-color="#b17b42"/>
+              <stop offset="1" stop-color="#684127"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="250" cy="505" rx="184" ry="17" fill="#020c0a" opacity=".48"/>
+          <path d="M229 444h42v58h-42z" fill="url(#trunk)"/>
+          <path d="M250 32 154 188h54L110 297h75L75 417h350l-110-120h75l-98-109h54z" fill="url(#branch)" stroke="#4d8a5c" stroke-opacity=".48" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M250 39 166 184h53L124 292h72L91 408" fill="none" stroke="#76a66a" stroke-opacity=".28" stroke-width="7" stroke-linecap="round"/>
+          <path d="M119 301q124 50 262 0M87 422q157 58 323 0" fill="none" stroke="#163f31" stroke-width="12" opacity=".65"/>
+          <circle cx="130" cy="335" r="7" fill="#d53e3d"/><circle cx="369" cy="331" r="7" fill="#f3cf70"/>
+          <circle cx="180" cy="233" r="6" fill="#f3cf70"/><circle cx="323" cy="248" r="7" fill="#d53e3d"/>
+          <circle cx="145" cy="390" r="7" fill="#eacb75"/><circle cx="351" cy="390" r="6" fill="#da4a42"/>
+          <circle cx="247" cy="464" r="5" fill="#ebcf7b"/><circle cx="235" cy="133" r="5" fill="#d9463d"/>
+        </svg>
+        <div class="star" aria-hidden="true">★</div>
+        <div class="garland one"></div>
+        <div class="garland two"></div>
+        <div class="garland three"></div>
+        <button class="photo-slot slot-1" data-slot="0" aria-label="Xem ảnh số 1"><span class="gift-string" style="--string-length: 42px; --string-angle: -12deg"></span><span class="visually-hidden">Ảnh số 1</span></button>
+        <button class="photo-slot slot-2" data-slot="1" aria-label="Xem ảnh số 2"><span class="gift-string" style="--string-length: 46px; --string-angle: 10deg"></span><span class="visually-hidden">Ảnh số 2</span></button>
+        <button class="photo-slot slot-3" data-slot="2" aria-label="Xem ảnh số 3"><span class="gift-string" style="--string-length: 46px; --string-angle: -10deg"></span><span class="visually-hidden">Ảnh số 3</span></button>
+        <button class="photo-slot slot-4" data-slot="3" aria-label="Xem ảnh số 4"><span class="gift-string" style="--string-length: 48px; --string-angle: 9deg"></span><span class="visually-hidden">Ảnh số 4</span></button>
+        <button class="photo-slot slot-5" data-slot="4" aria-label="Xem ảnh số 5"><span class="gift-string" style="--string-length: 48px; --string-angle: -9deg"></span><span class="visually-hidden">Ảnh số 5</span></button>
+      </section>
+
+      <section class="panel" aria-label="Thêm ảnh và điều khiển bằng camera">
+        <label class="upload-button" id="upload-label" for="photo-picker">＋ Chọn ảnh của bạn</label>
+        <input id="photo-picker" type="file" accept="image/*" multiple>
+        <button class="camera-button" id="camera-toggle" type="button">◎ Bật camera</button>
+        <p class="camera-status" id="camera-status" role="status"></p>
+        <div class="video-wrap" id="video-wrap">
+          <video id="camera-video" autoplay playsinline muted></video>
+          <span class="finger-count" id="finger-count" aria-label="Số ngón tay">–</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="photo-modal" role="dialog" aria-modal="true" aria-label="Ảnh kỷ niệm">
+    <div class="modal-content">
+      <img id="modal-image" alt="">
+      <h2 class="modal-title visually-hidden" id="modal-title">Ảnh kỷ niệm</h2>
+      <button class="close-button" id="modal-close" type="button" aria-label="Đóng ảnh">×</button>
+    </div>
+  </div>
+
+  <script type="module">
+    const picker = document.querySelector("#photo-picker");
+    const uploadLabel = document.querySelector("#upload-label");
+    const slots = [...document.querySelectorAll(".photo-slot")];
+    const modal = document.querySelector("#photo-modal");
+    const modalImage = document.querySelector("#modal-image");
+    const modalTitle = document.querySelector("#modal-title");
+    const video = document.querySelector("#camera-video");
+    const videoWrap = document.querySelector("#video-wrap");
+    const cameraToggle = document.querySelector("#camera-toggle");
+    const cameraStatus = document.querySelector("#camera-status");
+    const fingerCount = document.querySelector("#finger-count");
+    const photos = Array(5).fill(null);
+    let handLandmarker;
+    let cameraStream;
+    let detecting = false;
+    let animationFrame;
+    let candidateCount = 0;
+    let candidateSince = 0;
+    let triggeredCount = 0;
+    let fistSince = 0;
+    let fistTriggered = false;
+    let audioContext;
+    let musicTimer;
+    let musicNoteIndex = 0;
+    let musicPlaying = false;
+    let musicStarting = false;
+    let snowFrame;
+    let snowLastFrame = 0;
+    let snowflakes = [];
+    const activeNotes = new Set();
+    const musicVolume = 0.35;
+    const musicPhrase = [
+      [523.25, 659.25], [783.99, 659.25], [587.33, 698.46], [880, 698.46],
+      [659.25, 783.99], [987.77, 783.99], [880, 783.99], [659.25, 587.33],
+      [523.25, 659.25], [783.99, 880], [987.77, 880], [783.99, 698.46],
+      [659.25, 587.33], [523.25, 587.33], [659.25, 783.99], [523.25, 523.25]
+    ];
+
+    function resizeSnow() {
+      const canvas = document.querySelector("#snow-canvas");
+      const context = canvas.getContext("2d");
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      const count = Math.min(110, Math.max(45, Math.round(width / 12)));
+      snowflakes = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: 1 + Math.random() * 2.4,
+        speed: 24 + Math.random() * 58,
+        drift: 8 + Math.random() * 18,
+        phase: Math.random() * Math.PI * 2,
+        opacity: 0.3 + Math.random() * 0.55
+      }));
+      return { canvas, context, width, height };
+    }
+
+    function drawSnow(timestamp) {
+      const elapsed = Math.min((timestamp - (snowLastFrame || timestamp)) / 1000, 0.04);
+      snowLastFrame = timestamp;
+      const { context, width, height } = resizeSnowState;
+      context.clearRect(0, 0, width, height);
+      for (const flake of snowflakes) {
+        flake.y += flake.speed * elapsed;
+        flake.phase += elapsed * 0.7;
+        flake.x += Math.sin(flake.phase) * flake.drift * elapsed;
+        if (flake.y > height + flake.radius) {
+          flake.y = -flake.radius;
+          flake.x = Math.random() * width;
+        }
+        if (flake.x < -flake.radius) flake.x = width + flake.radius;
+        if (flake.x > width + flake.radius) flake.x = -flake.radius;
+        context.beginPath();
+        context.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+        context.fillStyle = `rgba(255, 255, 255, ${flake.opacity})`;
+        context.fill();
+      }
+      snowFrame = requestAnimationFrame(drawSnow);
+    }
+
+    let resizeSnowState;
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      resizeSnowState = resizeSnow();
+      window.addEventListener("resize", () => { resizeSnowState = resizeSnow(); });
+      snowFrame = requestAnimationFrame(drawSnow);
+    }
+
+    function playBell(frequency, startTime, duration) {
+      const gain = audioContext.createGain();
+      const fundamental = audioContext.createOscillator();
+      const overtone = audioContext.createOscillator();
+      const noteGain = musicVolume * 0.095;
+      gain.gain.setValueAtTime(0.0001, startTime);
+      gain.gain.exponentialRampToValueAtTime(noteGain, startTime + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+      fundamental.type = "sine";
+      fundamental.frequency.setValueAtTime(frequency, startTime);
+      overtone.type = "sine";
+      overtone.frequency.setValueAtTime(frequency * 2.01, startTime);
+      const overtoneGain = audioContext.createGain();
+      overtoneGain.gain.setValueAtTime(0.18, startTime);
+      fundamental.connect(gain);
+      overtone.connect(overtoneGain);
+      overtoneGain.connect(gain);
+      gain.connect(audioContext.destination);
+      fundamental.start(startTime);
+      overtone.start(startTime);
+      fundamental.stop(startTime + duration);
+      overtone.stop(startTime + duration);
+      activeNotes.add(fundamental);
+      activeNotes.add(overtone);
+      fundamental.addEventListener("ended", () => activeNotes.delete(fundamental), { once: true });
+      overtone.addEventListener("ended", () => activeNotes.delete(overtone), { once: true });
+    }
+
+    function playMusicStep() {
+      if (!musicPlaying) return;
+      const [melody, harmony] = musicPhrase[musicNoteIndex];
+      const now = audioContext.currentTime;
+      playBell(melody, now, 0.48);
+      if (musicNoteIndex % 2 === 0) playBell(harmony / 2, now, 0.62);
+      musicNoteIndex = (musicNoteIndex + 1) % musicPhrase.length;
+      musicTimer = window.setTimeout(playMusicStep, 390);
+    }
+
+    async function startMusic() {
+      if (musicPlaying || musicStarting) return musicPlaying;
+      musicStarting = true;
+      try {
+        audioContext ??= new AudioContext();
+        await audioContext.resume();
+        if (audioContext.state !== "running") return false;
+        musicPlaying = true;
+        playMusicStep();
+        return true;
+      } catch (error) {
+        console.error("Không thể phát nhạc:", error);
+        return false;
+      } finally {
+        musicStarting = false;
+      }
+    }
+
+    function enableMusicAfterGesture() {
+      startMusic().then(playing => {
+        if (playing) {
+          document.removeEventListener("pointerdown", enableMusicAfterGesture);
+          document.removeEventListener("keydown", enableMusicAfterGesture);
+        }
+      });
+    }
+
+    function showPhoto(index) {
+      const photo = photos[index];
+      if (!photo) {
+        setStatus(`Ảnh số ${index + 1} chưa được thêm. Hãy chọn ảnh trước nhé.`, "error");
+        return;
+      }
+      modalImage.src = photo.url;
+      modalImage.alt = `Ảnh kỷ niệm số ${index + 1}`;
+      modalTitle.textContent = `Khoảnh khắc Giáng Sinh · Ảnh ${index + 1}`;
+      modal.classList.add("open");
+      slots.forEach((slot, slotIndex) => slot.classList.toggle("active", slotIndex === index));
+    }
+
+    function closePhoto() {
+      modal.classList.remove("open");
+      slots.forEach(slot => slot.classList.remove("active"));
+    }
+
+    function setStatus(message, type = "") {
+      cameraStatus.textContent = message;
+      cameraStatus.className = `camera-status ${type}`;
+    }
+
+    function updatePhotos(files) {
+      const accepted = [...files].filter(file => file.type.startsWith("image/"));
+      if (accepted.length !== files.length) {
+        setStatus("Một số tệp không phải ảnh nên đã được bỏ qua.", "error");
+      }
+      const available = photos.filter(Boolean).length;
+      const remaining = 5 - available;
+      if (accepted.length > remaining) {
+        setStatus(`Cây chỉ chứa tối đa 5 ảnh. Đã thêm ${remaining} ảnh đầu tiên.`, "error");
+      }
+
+      for (const file of accepted.slice(0, remaining)) {
+        const index = photos.findIndex(photo => photo === null);
+        if (index < 0) break;
+        const url = URL.createObjectURL(file);
+        photos[index] = { url, name: file.name };
+        const image = document.createElement("img");
+        image.src = url;
+        image.alt = `Ảnh số ${index + 1}: ${file.name}`;
+        const placeholder = slots[index].querySelector(".placeholder");
+        if (placeholder) placeholder.remove();
+        slots[index].prepend(image);
+        slots[index].setAttribute("aria-label", `Xem ảnh số ${index + 1}: ${file.name}`);
+      }
+
+      const total = photos.filter(Boolean).length;
+      uploadLabel.classList.toggle("disabled", total === 5);
+      if (total === 5) picker.disabled = true;
+    }
+
+    function countRaisedFingers(landmarks) {
+      let count = 0;
+      for (const [tip, pip] of [[8, 6], [12, 10], [16, 14], [20, 18]]) {
+        if (landmarks[tip].y < landmarks[pip].y - 0.025) count += 1;
+      }
+      const distance = (a, b) => Math.hypot(landmarks[a].x - landmarks[b].x, landmarks[a].y - landmarks[b].y);
+      if (distance(4, 5) > distance(3, 5) * 1.18) count += 1;
+      return count;
+    }
+
+    function detectFrame() {
+      if (!detecting) return;
+      if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && handLandmarker) {
+        const result = handLandmarker.detectForVideo(video, performance.now());
+        const handDetected = result.landmarks?.length === 1;
+        const count = handDetected ? countRaisedFingers(result.landmarks[0]) : 0;
+        fingerCount.textContent = count || "–";
+        const now = performance.now();
+
+        if (handDetected && count === 0) {
+          candidateCount = 0;
+          candidateSince = 0;
+          triggeredCount = 0;
+          if (!fistSince) fistSince = now;
+          if (!fistTriggered && now - fistSince >= 600) {
+            if (modal.classList.contains("open")) closePhoto();
+            fistTriggered = true;
+          }
+        } else if (count >= 1 && count <= 5) {
+          fistSince = 0;
+          fistTriggered = false;
+          if (candidateCount !== count) {
+            candidateCount = count;
+            candidateSince = now;
+          } else if (now - candidateSince > 700 && triggeredCount !== count) {
+            if (photos[count - 1]) {
+              showPhoto(count - 1);
+              setStatus(`Đã nhận ${count} ngón tay — đang xem ảnh số ${count}.`, "success");
+            } else {
+              setStatus(`Đã nhận ${count} ngón tay, nhưng ảnh số ${count} chưa được thêm.`);
+            }
+            triggeredCount = count;
+          }
+        } else {
+          fistSince = 0;
+          fistTriggered = false;
+          candidateCount = 0;
+          candidateSince = 0;
+          triggeredCount = 0;
+        }
+      }
+      animationFrame = requestAnimationFrame(detectFrame);
+    }
+
+    async function startCamera() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setStatus("Trình duyệt không hỗ trợ camera. Hãy mở trang qua HTTPS hoặc localhost.", "error");
+        return;
+      }
+      cameraToggle.disabled = true;
+      setStatus("Đang tải nhận diện bàn tay…");
+      try {
+        if (!handLandmarker) {
+          const visionVersion = "1.2.2";
+          const vision = await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${visionVersion}/+esm`);
+          const files = await vision.FilesetResolver.forVisionTasks(
+            `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${visionVersion}/wasm`
+          );
+          handLandmarker = await vision.HandLandmarker.createFromOptions(files, {
+            baseOptions: {
+              modelAssetPath: "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task"
+            },
+            runningMode: "VIDEO",
+            numHands: 1
+          });
+        }
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } }
+        });
+        video.srcObject = cameraStream;
+        await video.play();
+        detecting = true;
+        videoWrap.classList.add("visible");
+        cameraToggle.textContent = "Tắt camera";
+        cameraToggle.classList.add("stop");
+        setStatus("Camera đang hoạt động. Đưa một bàn tay vào khung hình nhé.", "success");
+        detectFrame();
+      } catch (error) {
+        stopCamera();
+        const detail = error.name === "NotAllowedError"
+          ? "Bạn chưa cấp quyền camera. Hãy cho phép truy cập rồi thử lại."
+          : error.name === "NotFoundError"
+            ? "Không tìm thấy camera trên thiết bị."
+            : `Không thể bật camera: ${error.message || "lỗi không xác định"}`;
+        setStatus(detail, "error");
+      } finally {
+        cameraToggle.disabled = false;
+      }
+    }
+
+    function stopCamera() {
+      detecting = false;
+      cancelAnimationFrame(animationFrame);
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      video.srcObject = null;
+      videoWrap.classList.remove("visible");
+      cameraToggle.textContent = "◎ Bật camera";
+      cameraToggle.classList.remove("stop");
+      fingerCount.textContent = "–";
+    }
+
+    picker.addEventListener("change", event => {
+      updatePhotos(event.target.files);
+      picker.value = "";
+    });
+    slots.forEach((slot, index) => slot.addEventListener("click", () => showPhoto(index)));
+    cameraToggle.addEventListener("click", () => {
+      if (detecting) {
+        stopCamera();
+        setStatus("Camera đã tắt.");
+      } else {
+        startCamera();
+      }
+    });
+    document.addEventListener("pointerdown", enableMusicAfterGesture);
+    document.addEventListener("keydown", enableMusicAfterGesture);
+    startMusic();
+    document.querySelector("#modal-close").addEventListener("click", closePhoto);
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closePhoto();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closePhoto();
+    });
+    window.addEventListener("pagehide", () => {
+      cancelAnimationFrame(snowFrame);
+      stopCamera();
+      if (musicPlaying) {
+        musicPlaying = false;
+        window.clearTimeout(musicTimer);
+        activeNotes.forEach(note => {
+          try { note.stop(); } catch (error) {
+            if (error.name !== "InvalidStateError") throw error;
+          }
+        });
+        activeNotes.clear();
+        if (audioContext?.state !== "closed") audioContext?.close();
+      }
+    });
+  </script>
+</body>
+</html>
